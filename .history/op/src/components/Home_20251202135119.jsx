@@ -39,7 +39,7 @@ const Home = () => {
          
 
          {/* Services Grid - Circle Design */}
-<div className="grid grid-cols-2 lg:grid-cols-4 gap-15  px-1 lg:px-4 -mt-15 lg:mt-0">
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-15 mb-10 px-1 lg:px-4 -mt-15 lg:mt-0">
   {/* Education */}
   <div className="flex flex-col items-center text-center group">
     <div className="relative mb-6">

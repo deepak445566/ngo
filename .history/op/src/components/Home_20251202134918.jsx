@@ -39,7 +39,7 @@ const Home = () => {
          
 
          {/* Services Grid - Circle Design */}
-<div className="grid grid-cols-2 lg:grid-cols-4 gap-15  px-1 lg:px-4 -mt-15 lg:mt-0">
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-15 mb-20 px-1 lg:px-4 ">
   {/* Education */}
   <div className="flex flex-col items-center text-center group">
     <div className="relative mb-6">
@@ -141,7 +141,70 @@ const Home = () => {
   </div>
 </div>
 
-         
+          {/* How You Can Help */}
+          <div className="mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold text-center mb-4 exo">
+              How You Can Help
+            </h2>
+            <p className="text-xl text-gray-600 text-center mb-12 new max-w-3xl mx-auto">
+              Your support can transform a child's life. Choose how you want to contribute.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { 
+                  title: "Sponsor a Child", 
+                  amount: "₹1000/month", 
+                  desc: "Provide education, food, and clothing for one child",
+                  icon: <Users className="h-10 w-10 text-[#50C779]" />
+                },
+                { 
+                  title: "Donate Supplies", 
+                  amount: "Any Amount", 
+                  desc: "Contribute clothes, books, or school supplies",
+                  icon: <Shirt className="h-10 w-10 text-[#50C779]" />
+                },
+                { 
+                  title: "Volunteer", 
+                  amount: "Your Time", 
+                  desc: "Teach, mentor, or help with distribution",
+                  icon: <Heart className="h-10 w-10 text-[#50C779]" />
+                }
+              ].map((item, index) => (
+                <div key={index} className="bg-gray-50 rounded-2xl p-8 border border-gray-200 hover:border-[#50C779] hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center mb-6">
+                    {item.icon}
+                    <div className="ml-4">
+                      <h4 className="text-2xl font-bold exo">{item.title}</h4>
+                      <div className="text-[#50C779] font-semibold">{item.amount}</div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-6">{item.desc}</p>
+                  <button className="w-full bg-[#50C779] hover:bg-[#3EAE66] text-white py-3 rounded-xl font-semibold transition duration-300">
+                    Get Involved
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 exo">
+              Together We Can Change Lives
+            </h2>
+            <p className="text-xl text-gray-600 mb-10 new max-w-3xl mx-auto">
+              Every child deserves education, clothing, food, and a safe home. Join us in making this a reality.
+            </p>
+            <div className="flex flex-col md:flex-row gap-6 justify-center">
+              <button className="bg-[#50C779] hover:bg-[#3EAE66] text-white px-10 py-4 rounded-2xl font-semibold text-xl transition duration-300 shadow-lg hover:scale-105">
+                Donate Now
+              </button>
+              <button className="bg-transparent border-2 border-[#50C779] text-[#50C779] hover:bg-[#50C779] hover:text-white px-10 py-4 rounded-2xl font-semibold text-xl transition duration-300">
+                Volunteer Today
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>
