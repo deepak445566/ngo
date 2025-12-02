@@ -88,7 +88,7 @@ const ImageSlider = () => {
 
   return (
     <div 
-      className="relative w-full h-[100vh] overflow-hidden"
+      className="relative w-full h-[100vh] md:h-[70vh] overflow-hidden"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -103,7 +103,7 @@ const ImageSlider = () => {
           <div className="relative w-full h-full">
             {/* Background Image with overlay - Different images for mobile/desktop */}
             <div 
-              className="absolute inset-0 bg-cover "
+              className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${
                   isMobile && image.mobileSrc 
@@ -137,7 +137,7 @@ const ImageSlider = () => {
       {/* Navigation Buttons */}
       <button
         onClick={prevSlide}
-        className="absolute hidden lg:block left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 md:p-3 rounded-full transition duration-300"
+        className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 md:p-3 rounded-full transition duration-300"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -145,7 +145,7 @@ const ImageSlider = () => {
       
       <button
         onClick={nextSlide}
-        className="absolute hidden lg:block right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 md:p-3 rounded-full transition duration-300"
+        className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 md:p-3 rounded-full transition duration-300"
         aria-label="Next slide"
       >
         <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
