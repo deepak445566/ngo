@@ -12,9 +12,9 @@ const app = express();
 // Middleware
 const corsOptions = {
   origin: [
-    'http://localhost:5173',
+    'http://localhost:3000',
     'https://ngo-drab-five.vercel.app',
-   
+    'https://www.soorveeryuva.org' // Agar custom domain hai
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -23,9 +23,6 @@ const corsOptions = {
 };
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
-app.use(cors(corsOptions));
 
 // MongoDB Connection - UPDATED VERSION
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shoorveer_trust')
