@@ -3,7 +3,6 @@ import { volunteerAPI } from '../services/api';
 import { Search, Filter, Download, User, Grid, List, Eye, Trash2, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import MiniVolunteerCard from './VolunteerCard';
-import VolunteerForm from './VolunteerForm';
 
 
 const VolunteerGallery = () => {
@@ -308,7 +307,7 @@ const VolunteerGallery = () => {
       {/* Show Add Form or Gallery */}
       {showAddForm ? (
         <div className="max-w-7xl mx-auto">
-          <VolunteerForm 
+          <VolunteerFor 
             onSubmit={handleNewVolunteer}
             onCancel={handleCancelForm}
           />

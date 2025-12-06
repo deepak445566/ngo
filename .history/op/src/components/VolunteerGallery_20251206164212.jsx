@@ -3,8 +3,7 @@ import { volunteerAPI } from '../services/api';
 import { Search, Filter, Download, User, Grid, List, Eye, Trash2, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import MiniVolunteerCard from './VolunteerCard';
-import VolunteerForm from './VolunteerForm';
-
+import VolunteerForm from './VolunteerForm'; // Import the form component
 
 const VolunteerGallery = () => {
   const [volunteers, setVolunteers] = useState([]);
