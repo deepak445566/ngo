@@ -1,38 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import MiniVolunteerCard from './MiniVolunteerCard';
 import { volunteerAPI } from '../services/api';
-import { Search, Filter, Download, User, Grid, List, Eye, Trash2 } from 'lucide-react';
+import { Search, Filter, Download, User, Grid, List, Eye, Trash2, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import MiniVolunteerCard from './VolunteerCard';
+import VolunteerForm from './VolunteerForm';
 
 const VolunteerGallery = () => {
   const [volunteers, setVolunteers] = useState([]);
   const [filteredVolunteers, setFilteredVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAakNo, setSelectedAakNo] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [volunteerToDelete, setVolunteerToDelete] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch all volunteers
   const fetchVolunteers = async () => {
     try {
       setLoading(true);
+      console.log('Fetching volunteers...');
+      
       // Try backend API first
       try {
         const response = await volunteerAPI.getAllVolunteers();
+        console.log('Backend API response:', response);
+        
         if (response.success) {
           setVolunteers(response.data || []);
           setFilteredVolunteers(response.data || []);
+          
+          // Save to local storage as backup
+          localStorage.setItem('volunteers', JSON.stringify(response.data || []));
           return;
         }
       } catch (apiError) {
-        console.log('Backend API failed, using mock data');
+        console.log('Backend API failed:', apiError);
       }
 
-      // If backend fails, use local storage data or mock data
+      // If backend fails, use local storage data
       const savedVolunteers = JSON.parse(localStorage.getItem('volunteers')) || [];
+      console.log('Using local storage volunteers:', savedVolunteers.length);
+      
       if (savedVolunteers.length > 0) {
         setVolunteers(savedVolunteers);
         setFilteredVolunteers(savedVolunteers);
@@ -41,6 +53,7 @@ const VolunteerGallery = () => {
         const mockVolunteers = generateMockVolunteers();
         setVolunteers(mockVolunteers);
         setFilteredVolunteers(mockVolunteers);
+        localStorage.setItem('volunteers', JSON.stringify(mockVolunteers));
       }
     } catch (error) {
       console.error('Error fetching volunteers:', error);
@@ -76,7 +89,7 @@ const VolunteerGallery = () => {
   // Initial fetch
   useEffect(() => {
     fetchVolunteers();
-  }, []);
+  }, [refreshTrigger]);
 
   // Filter volunteers based on search
   useEffect(() => {
@@ -86,9 +99,9 @@ const VolunteerGallery = () => {
       const term = searchTerm.toLowerCase();
       results = results.filter(v =>
         v.name.toLowerCase().includes(term) ||
-        v.aakNo.toLowerCase().includes(term) ||
-        v.mobileNo.includes(term) ||
-        v.address.toLowerCase().includes(term)
+        (v.aakNo && v.aakNo.toLowerCase().includes(term)) ||
+        (v.mobileNo && v.mobileNo.includes(term)) ||
+        (v.address && v.address.toLowerCase().includes(term))
       );
     }
     
@@ -107,11 +120,32 @@ const VolunteerGallery = () => {
     setSelectedVolunteer(volunteer);
   };
 
-  // Download all ID cards as ZIP (simplified - individual download for now)
+  // Handle new volunteer addition
+  const handleNewVolunteer = (newVolunteer) => {
+    console.log('New volunteer received:', newVolunteer);
+    
+    // Add to current list
+    const updatedVolunteers = [newVolunteer, ...volunteers];
+    setVolunteers(updatedVolunteers);
+    setFilteredVolunteers(updatedVolunteers);
+    
+    // Save to local storage
+    localStorage.setItem('volunteers', JSON.stringify(updatedVolunteers));
+    
+    // Close form
+    setShowForm(false);
+    
+    // Show success message
+    toast.success('Volunteer added successfully!');
+    
+    // Trigger refresh
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  // Download all ID cards as ZIP
   const handleDownloadAll = async () => {
     toast.loading('Preparing downloads... This may take a moment');
     
-    // For now, show message about individual downloads
     setTimeout(() => {
       toast.dismiss();
       toast.success('Please download each card individually for best quality');
@@ -157,7 +191,7 @@ const VolunteerGallery = () => {
     setShowDeleteModal(true);
   };
 
-  if (loading) {
+  if (loading && volunteers.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -173,64 +207,95 @@ const VolunteerGallery = () => {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl shadow-lg p-6 text-white">
-          <h1 className="text-3xl font-bold mb-2">Volunteer ID Card Gallery</h1>
-          <p className="text-blue-100 opacity-90">
-            View and manage all volunteer ID cards. Total: {volunteers.length} volunteers
-          </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Volunteer ID Card Gallery</h1>
+              <p className="text-blue-100 opacity-90">
+                View and manage all volunteer ID cards. Total: {volunteers.length} volunteers
+              </p>
+            </div>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition flex items-center gap-2 shadow-lg"
+            >
+              <Plus className="w-5 h-5" />
+              {showForm ? 'Hide Form' : 'Add New Volunteer'}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="max-w-7xl mx-auto mb-8">
+      {/* Volunteer Form */}
+      {showForm && (
+        <div className="max-w-7xl mx-auto mb-8">
+          <VolunteerForm 
+            onSubmit={handleNewVolunteer}
+            onCancel={() => setShowForm(false)}
+          />
+        </div>
+      )}
+
+      {/* Controls */}
+      <div className="max-w-7xl mx-auto mb-6">
         <div className="bg-white rounded-xl shadow-lg p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by name, AAK no, mobile, address..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name, AAK, mobile, or address..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
 
-            {/* Filter by AAK Number */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-              <select
-                value={selectedAakNo}
-                onChange={(e) => setSelectedAakNo(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none"
-              >
-                <option value="">All AAK Numbers</option>
-                {aakNumbers.map(aakNo => (
-                  <option key={aakNo} value={aakNo}>{aakNo}</option>
-                ))}
-              </select>
+            {/* AAK Filter */}
+            <div className="w-full md:w-64">
+              <div className="relative">
+                <Filter className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                <select
+                  value={selectedAakNo}
+                  onChange={(e) => setSelectedAakNo(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
+                >
+                  <option value="">All AAK Numbers</option>
+                  {aakNumbers.map(aak => (
+                    <option key={aak} value={aak}>{aak}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* View Toggle */}
             <div className="flex gap-2">
               <button
-                onClick={handleDownloadAll}
-                className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center"
+                onClick={() => setViewMode('grid')}
+                className={`px-4 py-3 rounded-lg flex items-center gap-2 ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
-                <Download className="w-5 h-5 mr-2" />
-                Download All
+                <Grid className="w-5 h-5" />
+                Grid
               </button>
               <button
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center"
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-3 rounded-lg flex items-center gap-2 ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
-                {viewMode === 'grid' ? (
-                  <List className="w-5 h-5" />
-                ) : (
-                  <Grid className="w-5 h-5" />
-                )}
+                <List className="w-5 h-5" />
+                List
               </button>
             </div>
+
+            {/* Refresh Button */}
+            <button
+              onClick={() => fetchVolunteers()}
+              className="px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2"
+            >
+              <i className="fas fa-sync-alt"></i>
+              Refresh
+            </button>
           </div>
         </div>
       </div>
@@ -255,6 +320,15 @@ const VolunteerGallery = () => {
                 ? 'Try adjusting your search or filter criteria'
                 : 'No volunteers registered yet. Register a new volunteer to get started.'}
             </p>
+            {!showForm && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-green-700 transition inline-flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Register First Volunteer
+              </button>
+            )}
           </div>
         </div>
       ) : (

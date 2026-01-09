@@ -1,12 +1,9 @@
-// components/VolunteerForm.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { volunteerAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { User, Phone, Home, IdCard, Camera, X, Upload, Loader } from 'lucide-react';
 
 const VolunteerForm = ({ onSubmit, onCancel }) => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         aakNo: '',
@@ -34,7 +31,8 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
         
         // AAK number validation
         if (name === 'aakNo') {
-            if (!/^\d*$/.test(value)) return;
+            // Allow numbers and optional AAK prefix
+            if (!/^[a-zA-Z0-9]*$/.test(value)) return;
         }
         
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -60,8 +58,8 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
             reader.onloadend = () => {
                 setFormData(prev => ({
                     ...prev,
-                    image: file, // Keep the file object
-                    imagePreview: reader.result // For preview
+                    image: file,
+                    imagePreview: reader.result
                 }));
             };
             reader.readAsDataURL(file);
@@ -134,32 +132,34 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
                 if (response.success) {
                     toast.success('Volunteer registered successfully!');
                     if (onSubmit) {
-                        // Include imageUrl in the data
-                        onSubmit({
-                            ...response.data,
-                            imageUrl: response.data.imageUrl || formData.imagePreview
-                        });
+                        onSubmit(response.data);
                     }
                     resetForm();
                     return;
                 }
             } catch (backendError) {
                 console.log('Backend not available, using mock data');
+                toast('Using demo mode - data saved locally', { icon: 'ℹ️' });
             }
 
-            // If backend fails, use mock data with image preview
+            // If backend fails, generate mock data
+            const timestamp = Date.now();
+            const randomId = Math.random().toString(36).substr(2, 9);
+            
             const mockVolunteerData = {
-                _id: Date.now().toString(),
-                uniqueId: Math.floor(Math.random() * 1000) + 1,
+                _id: `mock_${timestamp}_${randomId}`,
+                uniqueId: parseInt(timestamp.toString().slice(-6)),
                 name: formData.name.trim(),
                 aakNo: formData.aakNo.trim(),
                 mobileNo: formData.mobileNo.trim(),
                 address: formData.address.trim(),
-                imageUrl: formData.imagePreview || '', // Use the image preview
+                imageUrl: formData.imagePreview || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name.trim())}&background=4f46e5&color=fff&size=200&bold=true&format=png`,
                 joinDate: new Date().toISOString(),
                 createdAt: new Date()
             };
 
+            console.log('Created mock volunteer:', mockVolunteerData);
+            
             toast.success('Volunteer registered successfully! (Demo Mode)');
             if (onSubmit) {
                 onSubmit(mockVolunteerData);
@@ -203,7 +203,7 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
                 </div>
 
                 {/* Form Body */}
-                <form onSubmit={handleSubmit} className="p-6 md:p-8" encType="multipart/form-data">
+                <form onSubmit={handleSubmit} className="p-6 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Left Column - Personal Details */}
                         <div className="space-y-6">
@@ -226,10 +226,7 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
                                     <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                                 </div>
                                 {errors.name && (
-                                    <p className="text-red-500 text-sm mt-1 flex items-center">
-                                        <i className="fas fa-exclamation-circle mr-1"></i>
-                                        {errors.name}
-                                    </p>
+                                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                                 )}
                             </div>
 
@@ -368,7 +365,10 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
                     <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
                         <button
                             type="button"
-                            onClick={onCancel}
+                            onClick={() => {
+                                if (onCancel) onCancel();
+                                resetForm();
+                            }}
                             className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition flex items-center justify-center"
                             disabled={loading}
                         >
@@ -411,7 +411,7 @@ const VolunteerForm = ({ onSubmit, onCancel }) => {
                             <i className="fas fa-info-circle mr-2 mt-0.5"></i>
                             <span>
                                 * After registration, your ID card will be automatically generated and displayed 
-                                on this page. You can download, print, or share it immediately.
+                                in the gallery. You can download, print, or share it immediately.
                             </span>
                         </p>
                     </div>

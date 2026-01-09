@@ -14,7 +14,8 @@ const corsOptions = {
   origin: [
    
     'http://localhost:5173',
-    'https://ngo-drab-five.vercel.app',
+    'soorveeryuvasangthan.com',
+    ''
   
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

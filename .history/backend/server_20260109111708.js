@@ -12,10 +12,11 @@ const app = express();
 // CORS Configuration
 const corsOptions = {
   origin: [
-    'http://localhost:3000',
+   
     'http://localhost:5173',
-    'https://ngo-drab-five.vercel.app',
-    'https://*.vercel.app'
+    'soorveeryuvasangthan.com',
+    'https://ngo-drab-five.vercel.app'
+  
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -25,7 +26,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
 
 // Body parsing with increased limits
 app.use(express.json({ limit: '50mb' }));
