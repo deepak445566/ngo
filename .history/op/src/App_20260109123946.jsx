@@ -9,6 +9,9 @@ import InstagramVideoSimple from './components/VideoPage';
 import VolunteerPage from './components/VolunteerPage';
 import VolunteerForm from './components/VolunteerForm';
 import VolunteerCard from './components/VolunteerCard'; // Make sure this is your MiniVolunteerCard
+import ModernFooter from './components/ModernFooter';
+import DonationPage from './components/DonationPage';
+import VolunteerGallery from './components/VolunteerGallery';
 
 function App() {
   const [latestVolunteer, setLatestVolunteer] = useState(null);
@@ -66,10 +69,13 @@ function App() {
               <AboutSection />
               <InstagramVideoSimple />
               <VolunteerPage />
-              <
+              <ModernFooter/>
             </>
           } />
-          
+          <Route path="/donate" element={<DonationPage/>}/>
+  <Route path="/gallery" element={    <VolunteerManagement />} />
+
+
           {/* Volunteer Registration Page with Auto Card Display */}
           <Route path="/volunteer/register" element={
             <div className="py-8 px-4">

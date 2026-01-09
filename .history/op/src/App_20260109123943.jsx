@@ -8,7 +8,7 @@ import AboutSection from './components/AboutSection';
 import InstagramVideoSimple from './components/VideoPage';
 import VolunteerPage from './components/VolunteerPage';
 import VolunteerForm from './components/VolunteerForm';
-// Make sure this is your MiniVolunteerCard
+import VolunteerCard from './components/VolunteerCard'; // Make sure this is your MiniVolunteerCard
 import ModernFooter from './components/ModernFooter';
 import DonationPage from './components/DonationPage';
 import VolunteerGallery from './components/VolunteerGallery';
@@ -73,7 +73,7 @@ function App() {
             </>
           } />
           <Route path="/donate" element={<DonationPage/>}/>
-  <Route path="/gallery" element={<VolunteerGallery />} />
+  <Route path="/gallery" element={    <VolunteerManagement />} />
 
 
           {/* Volunteer Registration Page with Auto Card Display */}

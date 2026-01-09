@@ -14,8 +14,7 @@ const corsOptions = {
   origin: [
    
     'http://localhost:5173',
-    
-    'https://ngo-drab-five.vercel.app'
+    'soorveeryuvasangthan.com',
   
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -43,7 +42,7 @@ const connectDB = async () => {
     } else {
       // Fallback to local MongoDB
       console.log('🔗 Connecting to local MongoDB...');
-      await mongoose.connect('mongodb+srv://digitalexpressindia30_db_user:digitalexpressindia30_db_user@clusterdigital.1y0nunx.mongodb.net/trust');
+      await mongoose.connect('mongodb://127.0.0.1:27017/shoorveer_trust');
       console.log('✅ Local MongoDB Connected Successfully');
     }
   } catch (error) {

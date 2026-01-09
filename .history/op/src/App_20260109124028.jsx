@@ -10,6 +10,9 @@ import VolunteerPage from './components/VolunteerPage';
 import VolunteerForm from './components/VolunteerForm';
 import VolunteerCard from './components/VolunteerCard'; // Make sure this is your MiniVolunteerCard
 import ModernFooter from './components/ModernFooter';
+import DonationPage from './components/DonationPage';
+import VolunteerGallery from './components/VolunteerGallery';
+import VolunteerManagement from './components/VolunteerManagement';
 
 function App() {
   const [latestVolunteer, setLatestVolunteer] = useState(null);
@@ -70,8 +73,9 @@ function App() {
               <ModernFooter/>
             </>
           } />
-          <Route 
-
+          <Route path="/donate" element={<DonationPage/>}/>
+           <Route path="/volunteer/*" element={<VolunteerManagement />} />
+  <Route path="/gallery" element={    <VolunteerManagement />} />
 
 
           {/* Volunteer Registration Page with Auto Card Display */}
