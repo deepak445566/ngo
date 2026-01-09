@@ -78,7 +78,7 @@ const Navbar = () => {
             <span className={`ml-3 font-bold text-xl lg:text-2xl exo transition-all duration-300 ${
               isScrolled ? 'text-gray-800' : 'text-white'
             }`}>
-              Soorveer Yuva Sangathan Trust
+              Soorveer 
             </span>
           </HashLink>
 
