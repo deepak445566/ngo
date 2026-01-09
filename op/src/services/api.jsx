@@ -1,7 +1,7 @@
 // services/api.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5173/api';
+const API_URL = 'https://ngo-t3ob.onrender.com/api';
 
 const volunteerAPI = {
     // Create volunteer with image upload
